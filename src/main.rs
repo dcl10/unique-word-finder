@@ -56,12 +56,8 @@ fn main() {
         if solution.len() == 0 {
             solution.push(word)
         } else if solution.len() < 5 {
-            solution.clone().iter().for_each(|x| {
-                let next_number = word_to_bits(x.as_str());
-                if (number & next_number == 0) && !solution.contains(&word.clone()) {
-                    solution.push(word.clone())
-                }
-            });
+            // TODO: loop through existing matches and
+            // make sure `word` matches NONE of them!
         } else {
             break;
         }
