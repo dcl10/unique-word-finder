@@ -51,19 +51,26 @@ fn main() {
     for line in reader.lines() {
         count += 1;
         let word = line.unwrap();
-        let number = word_to_bits(word.as_str());
-        println!("Checking '{word}' ({number})");
+        let word_as_bits = word_to_bits(word.as_str());
         if solution.len() == 0 {
             solution.push(word)
         } else if solution.len() < 5 {
-            // TODO: loop through existing matches and
-            // make sure `word` matches NONE of them!
+            let mut new_word_bits = 0;
+            for x in solution.clone().into_iter() {
+                let x_as_bits = word_to_bits(x.as_str());
+                new_word_bits = word_as_bits & x_as_bits;
+                if new_word_bits > 0 {
+                    break;
+                }
+            }
+            if new_word_bits == 0 {
+                solution.push(word)
+            }
         } else {
             break;
         }
-        println!("Solutions: {}", solution.len());
     }
     let elapsed = now.elapsed().as_millis();
-    println!("Encoded {count} words in {elapsed}ms!");
+    println!("Checked {count} words in {elapsed}ms!");
     println!("{}", solution.join(", "))
 }
