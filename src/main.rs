@@ -4,7 +4,15 @@ use std::io::{BufRead, BufReader};
 use std::path::Path;
 use std::time::Instant;
 
-fn word_to_bits(word: &str) -> u32 {
+fn word_to_bits(word: &str, map: &HashMap<char, u32>) -> u32 {
+    let mut output = 0;
+    for letter in word.chars() {
+        output |= map.get(&letter).unwrap()
+    }
+    output
+}
+
+fn main() {
     let letters_to_binary: HashMap<char, u32> = HashMap::from([
         ('a', 1),
         ('b', 1 << 1),
@@ -33,14 +41,7 @@ fn word_to_bits(word: &str) -> u32 {
         ('y', 1 << 24),
         ('z', 1 << 25),
     ]);
-    let mut output = 0;
-    for letter in word.chars() {
-        output |= letters_to_binary.get(&letter).unwrap()
-    }
-    output
-}
 
-fn main() {
     let path = Path::new("sgb-words.txt");
     let file = File::open(path).expect("uh-oh");
     let reader = BufReader::new(file);
@@ -51,13 +52,13 @@ fn main() {
     for line in reader.lines() {
         count += 1;
         let word = line.unwrap();
-        let word_as_bits = word_to_bits(word.as_str());
+        let word_as_bits = word_to_bits(word.as_str(), &letters_to_binary);
         if solution.len() == 0 {
             solution.push(word)
         } else if solution.len() < 5 {
             let mut new_word_bits = 0;
             for x in solution.clone().into_iter() {
-                let x_as_bits = word_to_bits(x.as_str());
+                let x_as_bits = word_to_bits(x.as_str(), &letters_to_binary);
                 new_word_bits = word_as_bits & x_as_bits;
                 if new_word_bits > 0 {
                     break;
