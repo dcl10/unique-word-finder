@@ -1,5 +1,5 @@
 [package]
-name = "wordle"
+name = "unique-word-finder"
 version = "0.1.0"
 edition = "2021"
 
