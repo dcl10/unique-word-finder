@@ -23,13 +23,12 @@ fn get_word_set(wordset: &mut HashMap<u32, String>) -> Option<HashSet<String>> {
         if output.len() == 0 {
             output.insert(v.to_owned());
             selected_keys.insert(k.to_owned());
-        } else if output.len() < 5 {
+        } else if output.len() < 3 {
             let mut number = 0;
             for x in selected_keys.clone().iter() {
-                number = k & x;
-                if number != 0 {
-                    break;
-                };
+                if k & x != 0 {
+                    number += 1;
+                }
             }
             if number == 0 {
                 output.insert(v.to_owned());
@@ -39,7 +38,7 @@ fn get_word_set(wordset: &mut HashMap<u32, String>) -> Option<HashSet<String>> {
             break;
         }
     }
-    if output.len() == 5 {
+    if output.len() == 3 {
         selected_keys.iter().for_each(|x| {
             wordset.remove(x);
         });
@@ -109,6 +108,14 @@ fn main() {
         let list: Vec<String> = words.unwrap().into_iter().collect();
         solutions.push(list);
     }
-    let solution_end = solution_start.elapsed().as_millis();
-    println!("Found {} solutions in {}ms", solutions.len(), solution_end);
+    let solution_end = solution_start.elapsed().as_micros();
+    println!(
+        "Found {} solutions in {}\u{03BC}s",
+        solutions.len(),
+        solution_end
+    );
+
+    for row in solutions.into_iter() {
+        println!("{}", row.into_iter().collect::<Vec<String>>().join(" "));
+    }
 }
