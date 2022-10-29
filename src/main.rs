@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -42,36 +42,20 @@ fn main() {
         ('z', 1 << 25),
     ]);
 
+    let mut word_set: HashSet<u32> = HashSet::new();
+
     let path = Path::new("sgb-words.txt");
     let file = File::open(path).expect("uh-oh");
     let reader = BufReader::new(file);
 
     let now = Instant::now();
-    let mut count = 0;
     let mut solution: Vec<String> = Vec::new();
+
     for line in reader.lines() {
-        count += 1;
         let word = line.unwrap();
-        let word_as_bits = word_to_bits(word.as_str(), &letters_to_binary);
-        if solution.len() == 0 {
-            solution.push(word)
-        } else if solution.len() < 5 {
-            let mut new_word_bits = 0;
-            for x in solution.clone().into_iter() {
-                let x_as_bits = word_to_bits(x.as_str(), &letters_to_binary);
-                new_word_bits = word_as_bits & x_as_bits;
-                if new_word_bits > 0 {
-                    break;
-                }
-            }
-            if new_word_bits == 0 {
-                solution.push(word)
-            }
-        } else {
-            break;
-        }
+        let word_as_bits = word_to_bits(&word, &letters_to_binary);
+        word_set.insert(word_as_bits);
     }
+
     let elapsed = now.elapsed().as_millis();
-    println!("Checked {count} words in {elapsed}ms!");
-    println!("{}", solution.join(", "))
 }
