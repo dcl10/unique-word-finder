@@ -4,12 +4,17 @@ use std::io::{BufRead, BufReader};
 use std::path::Path;
 use std::time::Instant;
 
-fn word_to_bits(word: &str, map: &HashMap<char, u32>) -> u32 {
+fn word_to_bits(word: &str, map: &HashMap<char, u32>) -> Option<u32> {
     let mut output = 0;
+    let mut char_set = HashSet::new();
     for letter in word.chars() {
-        output |= map.get(&letter).unwrap()
+        if char_set.contains(&letter) {
+            return None;
+        }
+        output |= map.get(&letter).unwrap();
+        char_set.insert(letter);
     }
-    output
+    Some(output)
 }
 
 fn main() {
@@ -54,7 +59,9 @@ fn main() {
     for line in reader.lines() {
         let word = line.unwrap();
         let word_as_bits = word_to_bits(&word, &letters_to_binary);
-        word_set.insert(word_as_bits);
+        if word_as_bits.is_some() {
+            word_set.insert(word_as_bits.unwrap());
+        }
     }
 
     let elapsed = now.elapsed().as_millis();
