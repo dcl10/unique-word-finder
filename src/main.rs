@@ -28,8 +28,6 @@ fn get_word_set(wordset: &mut HashMap<u32, String>) -> Option<HashSet<String>> {
                 if x & k == 0 {
                     output.insert(v.to_owned());
                     selected_keys.insert(k.to_owned());
-                } else {
-                    break;
                 }
             }
         }
@@ -75,8 +73,6 @@ fn main() {
 
     let mut word_set: HashMap<u32, String> = HashMap::new();
 
-    let mut solutions: Vec<Vec<String>> = Vec::new();
-
     let path = Path::new("sgb-words.txt");
     let file = File::open(path).expect("uh-oh");
     let reader = BufReader::new(file);
@@ -92,4 +88,17 @@ fn main() {
     }
     let wordset_end = wordset_start.elapsed().as_millis();
     println!("Built set in {}ms", wordset_end);
+
+    while word_set.len() > 0 {
+        let words = get_word_set(&mut word_set);
+        if words.is_none() {
+            break;
+        }
+        let list: Vec<String> = words.unwrap().into_iter().collect();
+        println!(
+            "Words: {}, remaining words: {}",
+            list.join(" "),
+            word_set.len()
+        )
+    }
 }
