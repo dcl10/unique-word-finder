@@ -8,11 +8,10 @@ fn word_to_bits(word: &str, map: &HashMap<char, u32>) -> Option<u32> {
     let mut output = 0;
     let mut char_set = HashSet::new();
     for letter in word.chars() {
-        if char_set.contains(&letter) {
+        if !char_set.insert(letter) {
             return None;
         }
         output |= map.get(&letter).unwrap();
-        char_set.insert(letter);
     }
     Some(output)
 }
