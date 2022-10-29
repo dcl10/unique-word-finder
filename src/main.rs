@@ -49,13 +49,14 @@ fn main() {
 
     let mut word_set: HashSet<u32> = HashSet::new();
 
+    let mut solutions: Vec<Vec<String>> = Vec::new();
+
     let path = Path::new("sgb-words.txt");
     let file = File::open(path).expect("uh-oh");
     let reader = BufReader::new(file);
 
-    let now = Instant::now();
-    let mut solution: Vec<String> = Vec::new();
-
+    println!("Building set of words with unique letters");
+    let wordset_start = Instant::now();
     for line in reader.lines() {
         let word = line.unwrap();
         let word_as_bits = word_to_bits(&word, &letters_to_binary);
@@ -63,6 +64,6 @@ fn main() {
             word_set.insert(word_as_bits.unwrap());
         }
     }
-
-    let elapsed = now.elapsed().as_millis();
+    let wordset_end = wordset_start.elapsed().as_millis();
+    print!("Built set in {}ms", wordset_end);
 }
