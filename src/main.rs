@@ -16,6 +16,33 @@ fn word_to_bits(word: &str, map: &HashMap<char, u32>) -> Option<u32> {
     Some(output)
 }
 
+fn get_word_set(wordset: &mut HashMap<u32, String>) -> Option<HashSet<String>> {
+    let mut selected_keys = HashSet::new();
+    let mut output = HashSet::new();
+    for (k, v) in wordset.iter() {
+        if output.len() == 0 {
+            output.insert(v.to_owned());
+            selected_keys.insert(k.to_owned());
+        } else if output.len() < 5 {
+            for x in selected_keys.clone().iter() {
+                if x & k == 0 {
+                    output.insert(v.to_owned());
+                    selected_keys.insert(k.to_owned());
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+    if output.len() == 5 {
+        selected_keys.iter().for_each(|x| {
+            wordset.remove(x);
+        });
+        return Some(output);
+    }
+    None
+}
+
 fn main() {
     let letters_to_binary: HashMap<char, u32> = HashMap::from([
         ('a', 1),
@@ -46,7 +73,7 @@ fn main() {
         ('z', 1 << 25),
     ]);
 
-    let mut word_set: HashSet<u32> = HashSet::new();
+    let mut word_set: HashMap<u32, String> = HashMap::new();
 
     let mut solutions: Vec<Vec<String>> = Vec::new();
 
@@ -60,9 +87,9 @@ fn main() {
         let word = line.unwrap();
         let word_as_bits = word_to_bits(&word, &letters_to_binary);
         if word_as_bits.is_some() {
-            word_set.insert(word_as_bits.unwrap());
+            word_set.insert(word_as_bits.unwrap(), word);
         }
     }
     let wordset_end = wordset_start.elapsed().as_millis();
-    print!("Built set in {}ms", wordset_end);
+    println!("Built set in {}ms", wordset_end);
 }
